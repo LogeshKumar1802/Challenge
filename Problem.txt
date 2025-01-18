@@ -1,0 +1,1 @@
+Display the combination of values when roll the three dice together like are values are same (or) any two values are same (or) all values are different.

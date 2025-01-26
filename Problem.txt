@@ -1,0 +1,4 @@
+String repetition problem
+for example
+a1b4
+abbbb

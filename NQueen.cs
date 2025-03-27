@@ -1,60 +1,90 @@
 ﻿namespace Challenge;
 internal class NQueen {
     static void Main (string[] args) {
-        var chessBoard = new char[4, 4];
-        while (QueenNxtColPos != 4) {
-            QueenSideMovement (chessBoard, RowPos, ColPos);
-            QueenBobMovement (chessBoard, RowPos, ColPos);
-            QueenDiagRightMovement (chessBoard, RowPos, ColPos);
-            QueenDiagLeftMovement (chessBoard, RowPos, ColPos);
-            PrintChessBoard (chessBoard);
-            FindQueenNxtPos (chessBoard, RowPos);
+        while (Breaker) {
+            ChessBoardMaker (RowPos, ColPos);
+            FindQueenNxtPos (ChessBoard, RowPos);
         }
+        PrintChessBoard ();
     }
 
-    static void QueenSideMovement (char[,] arr, byte row, byte col) {
+    static void ChessBoardMaker (int rowPos, int colPos) {
+        QueenSideMovement (ChessBoard, rowPos, colPos);
+        QueenBobMovement (ChessBoard, rowPos, colPos);
+        QueenDiaRightUMovement (ChessBoard, rowPos, colPos);
+        QueenDiagRightDMovement (ChessBoard, rowPos, colPos);
+        QueenDiaLeftUMovement (ChessBoard, rowPos, colPos);
+        QueenDiagLeftDMovement (ChessBoard, rowPos, colPos);
+    }
+
+    static void QueenSideMovement (char[,] arr, int row, int col) {
         arr[row, col] = 'Q';
-        byte tempCol = col;
-        while (++col % 4 != tempCol) arr[row, col] = 'x';
-        ColPos = col %= 4;
+        int tempCol = col;
+        while ((col = (++col) % NoOfQueens) != tempCol) arr[row, col] = 'x';
     }
 
-    static void QueenBobMovement (char[,] arr, byte row, byte col) {
-        byte tempRow = row;
-        while (++row % 4 != tempRow) arr[row, col] = 'x';
-        RowPos = row %= 4;
+    static void QueenBobMovement (char[,] arr, int row, int col) {
+        int tempRow = row;
+        while ((row = ++row % NoOfQueens) != tempRow) arr[row, col] = 'x';
     }
 
-    static void QueenDiagRightMovement (char[,] arr, byte row, byte col) {
-        byte tempRow = row, tempCol = col;
-        while (++row % 4 != tempRow & ++col % 4 != tempCol) arr[row, col] = 'x';
-        RowPos = row %= 4; ColPos = col %= 4;
+    static void QueenDiaRightUMovement (char[,] arr, int row, int col) {
+        while (--row >= 0 & ++col < NoOfQueens) arr[row, col] = 'x';
     }
 
-    static void QueenDiagLeftMovement (char[,] arr, byte row, byte col) {
-        byte tempRow = row, tempCol = col;
-        while (++row % 4 != tempRow & ++col % 4 != tempCol) arr[row, col] = 'x';
-        RowPos = row %= 4; ColPos = col %= 4;
+    static void QueenDiagRightDMovement (char[,] arr, int row, int col) {
+        while (++row < NoOfQueens & ++col < NoOfQueens) arr[row, col] = 'x';
     }
 
-    static void FindQueenNxtPos (char[,] arr, byte row) {
-        for (byte i = ++row; i < arr.GetLength (0); i++) {
-            for (byte j = 0; j < arr.GetLength (1); j++) {
+    static void QueenDiaLeftUMovement (char[,] arr, int row, int col) {
+        while (--row >= 0 & --col >= 0) arr[row, col] = 'x';
+    }
+
+    static void QueenDiagLeftDMovement (char[,] arr, int row, int col) {
+        while (++row < NoOfQueens & --col >= 0) arr[row, col] = 'x';
+    }
+
+    static void FindQueenNxtPos (char[,] arr, int row) {
+        for (int i = ++row; i < arr.GetLength (0); i++) {
+            for (int j = 0; j < arr.GetLength (1); j++) {
                 if (arr[i, j] == '\0') {
                     (RowPos, ColPos) = (i, j);
                     return;
                 }
             }
         }
+        if ((ColPos = ++QueenNxtColPos % NoOfQueens) == 0) ++QueenNxtRowPos;
+        RowPos = QueenNxtRowPos;
+        if (RowPos != 0) FindEmptyPosition (arr);
+        if (RowPos == NoOfQueens) Breaker = false;
+        QueensArr.Add (arr);
+        ChessBoard = new char[NoOfQueens, NoOfQueens];
     }
 
-    static void PrintChessBoard (char[,] arr) {
-        int counter = 0;
-        foreach (var a in arr) {
-            Console.Write (a + " ");
-            if (++counter % 4 == 0) Console.WriteLine ();
+    static void FindEmptyPosition (char[,] arr) {
+        for (int i = 0; i < arr.GetLength (0); i++) {
+            for (int j = 0; j < arr.GetLength (1); j++) {
+                if (arr[i, j] == '\0') {
+                    ChessBoardMaker (i, j);
+                }
+            }
         }
     }
 
-    static byte QueenNxtRowPos = 0, QueenNxtColPos = 0, RowPos = 0, ColPos = 0;
+    static void PrintChessBoard () {
+        int counter = 0;
+        foreach (var arr in QueensArr) {
+            foreach (var a in arr) {
+                Console.Write (a + " ");
+                if (++counter % NoOfQueens == 0) Console.WriteLine ();
+            }
+            Console.WriteLine (new string ('-', Console.WindowWidth));
+        }
+    }
+
+    static int QueenNxtRowPos = 0, QueenNxtColPos = 0, RowPos = 0, ColPos = 0;
+    static readonly byte NoOfQueens = 4;
+    static char[,] ChessBoard = new char[NoOfQueens, NoOfQueens];
+    static List<char[,]> QueensArr = [];
+    static bool Breaker = true;
 }
